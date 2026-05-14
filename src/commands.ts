@@ -67,3 +67,34 @@ export function deleteEntry(id: string): void {
   writeStore(store);
   console.log(chalk.green("✔") + " Entry deleted.");
 }
+
+export function clearEntries(dateStr?: string): void {
+  const store = readStore();
+  const target = dateStr ?? todayString();
+  const entries = store.entries.filter((e) => e.date === target);
+
+  if (entries.length === 0) {
+    console.log(chalk.yellow(`No entries found for ${target}.`));
+    return;
+  }
+
+  const dayLabel = target === todayString() ? "today" : target;
+  console.log(chalk.yellow(`⚠️  You are about to delete ${entries.length} entry(ies) for ${dayLabel}.`));
+
+  const { createInterface } = require('readline');
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question(chalk.bold('Are you sure? (y/N): '), (answer: string) => {
+    if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+      store.entries = store.entries.filter((e) => e.date !== target);
+      writeStore(store);
+      console.log(chalk.green("✔") + ` All entries for ${dayLabel} have been deleted.`);
+    } else {
+      console.log(chalk.gray("Cancelled."));
+    }
+    rl.close();
+  });
+}

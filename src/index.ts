@@ -2,7 +2,7 @@
 
 import { Command } from "commander";
 import chalk from "chalk";
-import { addEntry, listEntries, showSummary, deleteEntry } from "./commands";
+import { addEntry, listEntries, showSummary, deleteEntry, clearEntries } from "./commands";
 
 const program = new Command();
 
@@ -41,6 +41,14 @@ program
   .description("Delete an entry by its ID prefix")
   .action((id: string) => {
     deleteEntry(id);
+  });
+
+program
+  .command("clear")
+  .description("Delete all entries for today (or a specific date)")
+  .option("-d, --date <date>", "Date in YYYY-MM-DD format")
+  .action((options: { date?: string }) => {
+    clearEntries(options.date);
   });
 
 program.parse(process.argv);
